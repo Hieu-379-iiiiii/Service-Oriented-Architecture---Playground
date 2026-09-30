@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+    name="UserService"
+    targetNamespace="http://examples.com"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:tns="http://examples.com"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+   <types>
+      <xsd:schema targetNamespace="http://examples.com">
+         <xsd:complexType name="User">
+            <xsd:sequence>
+               <xsd:element name="id" type="xsd:int"/>
+               <xsd:element name="email" type="xsd:string"/>
+               <xsd:element name="firstName" type="xsd:string" nillable="true"/>
+               <xsd:element name="lastName" type="xsd:string" nillable="true"/>
+               <xsd:element name="isVerified" type="xsd:boolean"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:complexType name="Game">
+            <xsd:sequence>
+               <xsd:element name="id" type="xsd:int"/>
+               <xsd:element name="title" type="xsd:string"/>
+               <xsd:element name="genre" type="xsd:string" nillable="true"/>
+               <xsd:element name="price" type="xsd:decimal"/>
+               <xsd:element name="purchasedAt" type="xsd:string" minOccurs="0"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:complexType name="UserArray">
+            <xsd:sequence>
+               <xsd:element name="user" type="tns:User" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+         <xsd:complexType name="GameArray">
+            <xsd:sequence>
+               <xsd:element name="game" type="tns:Game" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+      </xsd:schema>
+   </types>
+
+   <!-- Msg -->
+   <message name="EmptyRequest"/>
+   <message name="IdRequest"><part name="id" type="xsd:int"/></message>
+   
+   <message name="HealthResponse">
+      <part name="status" type="xsd:string"/>
+      <part name="message" type="xsd:string"/>
+   </message>
+   <message name="GetUsersResponse"><part name="users" type="tns:UserArray"/></message>
+   <message name="GetUserResponse"><part name="user" type="tns:User"/></message>
+   
+   <message name="CreateUserRequest">
+      <part name="email" type="xsd:string"/>
+      <part name="passwordHash" type="xsd:string"/>
+      <part name="firstName" type="xsd:string"/>
+      <part name="lastName" type="xsd:string"/>
+   </message>
+   <message name="UpdateUserRequest">
+      <part name="id" type="xsd:int"/>
+      <part name="firstName" type="xsd:string"/>
+      <part name="lastName" type="xsd:string"/>
+   </message>
+   <message name="StatusMessageResponse"><part name="message" type="xsd:string"/></message>
+   <message name="GetGamesResponse"><part name="games" type="tns:GameArray"/></message>
+
+   <!-- Port-->
+   <portType name="User_PortType">
+      <operation name="getHealth"><input message="tns:EmptyRequest"/><output message="tns:HealthResponse"/></operation>
+      <operation name="getUsers"><input message="tns:EmptyRequest"/><output message="tns:GetUsersResponse"/></operation>
+      <operation name="getUserById"><input message="tns:IdRequest"/><output message="tns:GetUserResponse"/></operation>
+      <operation name="createUser"><input message="tns:CreateUserRequest"/><output message="tns:StatusMessageResponse"/></operation>
+      <operation name="updateUser"><input message="tns:UpdateUserRequest"/><output message="tns:StatusMessageResponse"/></operation>
+      <operation name="deleteUser"><input message="tns:IdRequest"/><output message="tns:StatusMessageResponse"/></operation>
+      <operation name="getGames"><input message="tns:EmptyRequest"/><output message="tns:GetGamesResponse"/></operation>
+      <operation name="getUserGames"><input message="tns:IdRequest"/><output message="tns:GetGamesResponse"/></operation>
+   </portType>
+
+   <!-- Binding -->
+   <binding name="User_Binding" type="tns:User_PortType">
+      <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+      <operation name="getHealth"><soap:operation soapAction="getHealth"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+      <operation name="getUsers"><soap:operation soapAction="getUsers"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+      <operation name="getUserById"><soap:operation soapAction="getUserById"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+      <operation name="createUser"><soap:operation soapAction="createUser"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+      <operation name="updateUser"><soap:operation soapAction="updateUser"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+      <operation name="deleteUser"><soap:operation soapAction="deleteUser"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+      <operation name="getGames"><soap:operation soapAction="getGames"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+      <operation name="getUserGames"><soap:operation soapAction="getUserGames"/><input><soap:body use="literal"/></input><output><soap:body use="literal"/></output></operation>
+   </binding>
+
+
+
+   <service name="User_Service">
+      <port binding="tns:User_Binding" name="User_Port">
+         <soap:address location="http://localhost:8000/wsdl" />
+      </port>
+   </service>
+</definitions>

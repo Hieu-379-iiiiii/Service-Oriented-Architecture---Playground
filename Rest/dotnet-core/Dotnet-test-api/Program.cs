@@ -73,7 +73,7 @@ app.MapPost("/api/users", (UserDto userDto) =>
     cmd.Parameters.AddWithValue("@LastName", userDto.LastName);
 
     cmd.ExecuteNonQuery();
-    return Results.Created($"/api/users", new { message = "User created successfully!", email = userDto.Email });
+    return Results.Created($"/api/users", new { message = "User created", email = userDto.Email });
 });
 
 app.MapPut("/api/users/{id:int}", (int id, UpdateUserDto updateDto) =>
@@ -89,7 +89,7 @@ app.MapPut("/api/users/{id:int}", (int id, UpdateUserDto updateDto) =>
     int rowsAffected = cmd.ExecuteNonQuery();
     if (rowsAffected == 0) return Results.NotFound(new { message = "User not found." });
 
-    return Results.Ok(new { message = "User updated successfully." });
+    return Results.Ok(new { message = "User updated" });
 });
 
 app.MapDelete("/api/users/{id:int}", (int id) =>
@@ -101,7 +101,7 @@ app.MapDelete("/api/users/{id:int}", (int id) =>
     int rowsAffected = cmd.ExecuteNonQuery();
     if (rowsAffected == 0) return Results.NotFound(new { message = "User not found." });
 
-    return Results.Ok(new { message = "User deleted successfully." });
+    return Results.Ok(new { message = "User delete" });
 });
 
 
