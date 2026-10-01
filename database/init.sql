@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS email_otps (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Compound indexes max execution speed during purges and validation
 CREATE INDEX idx_otp_lookup ON email_otps (user_id, otp_code, is_used);
 CREATE INDEX idx_otp_expiry ON email_otps (expires_at);
 
@@ -40,7 +39,6 @@ CREATE TABLE IF NOT EXISTS games (
     price DECIMAL(6,2) DEFAULT 0.00
 );
 
--- Junction Table: Ties multiple users to multiple games (Many-to-Many)
 CREATE TABLE IF NOT EXISTS user_games (
     user_id INT NOT NULL,
     game_id INT NOT NULL,

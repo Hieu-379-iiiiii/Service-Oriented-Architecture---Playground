@@ -1,0 +1,71 @@
+services:
+
+  basic-api:
+    build: ./basic-api
+    container_name: basic-api
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DB_HOST: ${DB_HOST:-host.docker.internal}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-microservices_demo}
+      DB_USER: ${DB_USER:-demo_user}
+      DB_PASSWORD: ${DB_PASSWORD:-Demo123!}
+      JWT_SECRET: ${JWT_SECRET:-development-secret}
+    restart: unless-stopped
+
+  auth:
+    build: ./auth
+    container_name: auth
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      DB_HOST: ${DB_HOST:-host.docker.internal}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-microservices_demo}
+      DB_USER: ${DB_USER:-demo_user}
+      DB_PASSWORD: ${DB_PASSWORD:-Demo123!}
+      JWT_SECRET: ${JWT_SECRET:-development-secret}
+      OTP_SERVICE_URL: ${OTP_SERVICE_URL:-http://otp-service:3002}
+      REFRESH_TOKEN_TTL_MS: ${REFRESH_TOKEN_TTL_MS:-604800000}
+    restart: unless-stopped
+
+  otp-service:
+    build: ./otp-service
+    container_name: otp-service
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+      DB_HOST: ${DB_HOST:-host.docker.internal}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-microservices_demo}
+      DB_USER: ${DB_USER:-demo_user}
+      DB_PASSWORD: ${DB_PASSWORD:-Demo123!}
+      SMTP_HOST: ${SMTP_HOST:-mailhog}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_FROM: ${SMTP_FROM:-demo@local.test}
+    depends_on:
+      - mailhog
+    restart: unless-stopped
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    restart: unless-stopped
+
+  client:
+    build: ./client
+    container_name: client
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+      VITE_AUTH_URL: ${VITE_AUTH_URL:-http://localhost:3001}
+      VITE_OTP_URL: ${VITE_OTP_URL:-http://localhost:3002}
+    restart: unless-stopped
